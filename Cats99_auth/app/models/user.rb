@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  validates :password, presence: true, length: { minimum: 6, allow_nil: true }
+  validates :password, length: { minimum: 6, allow_nil: true }
   validates :user_name, :session_token, presence: true, uniqueness: true
   validates :password_digest, presence: true
   after_initialize :ensure_session_token
@@ -18,22 +18,22 @@ attr_reader :password
 
   def password=(password)
     @password = password
-    self.password_digest = Bcrypt::Password.create(password)
-    
+    self.password_digest = BCrypt::Password.create(password)
+    # debugger
   end
 
 
   def is_password?(password)
     #compares digests
-    Bcrypt::Password.new(self.password_digest).is_password?(password)
+    BCrypt::Password.new(self.password_digest).is_password?(password)
   end
   
   def ensure_session_token
-    self.session_token ||= SecureRandom.urlsafe_base64 #POTENTIAL ERROR, possibly colon instaed of period
+    self.session_token ||= SecureRandom::urlsafe_base64 #POTENTIAL ERROR, possibly colon instaed of period
   end
 
   def reset_session_token!
-    self.session_token = SecureRandom.urlsafe_base64 #Potential problem, double colon not period
+    self.session_token = SecureRandom::urlsafe_base64 #Potential problem, double colon not period
     self.save!
     self.session_token
   end
